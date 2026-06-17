@@ -1,0 +1,144 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  login     String   @unique
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          Int        @id @default(autoincrement())
+  name        String
+  article     String     @unique
+  unit        String
+  description String?
+  supplies    Supply[]
+  shipments   Shipment[]
+  stocks      Stock[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Warehouse {
+  id        Int        @id @default(autoincrement())
+  name      String
+  address   String
+  capacity  Int
+  manager   String
+  supplies  Supply[]
+  shipments Shipment[]
+  stocks    Stock[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model Supplier {
+  id            Int      @id @default(autoincrement())
+  organization  String
+  contactPerson String
+  phone         String
+  email         String
+  address       String
+  supplies      Supply[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Customer {
+  id            Int        @id @default(autoincrement())
+  organization  String
+  contactPerson String
+  phone         String
+  email         String
+  address       String
+  shipments     Shipment[]
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Vehicle {
+  id           Int           @id @default(autoincrement())
+  brand        String
+  licensePlate String        @unique
+  loadCapacity Int
+  driver       String
+  status       VehicleStatus @default(AVAILABLE)
+  shipments    Shipment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Supply {
+  id          Int          @id @default(autoincrement())
+  supplierId  Int
+  warehouseId Int
+  productId   Int
+  quantity    Int
+  supplyDate  DateTime
+  status      SupplyStatus @default(PLANNED)
+  supplier    Supplier     @relation(fields: [supplierId], references: [id])
+  warehouse   Warehouse    @relation(fields: [warehouseId], references: [id])
+  product     Product      @relation(fields: [productId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Shipment {
+  id           Int            @id @default(autoincrement())
+  customerId   Int
+  warehouseId  Int
+  productId    Int
+  vehicleId    Int
+  quantity     Int
+  shipmentDate DateTime
+  status       ShipmentStatus @default(PLANNED)
+  customer     Customer       @relation(fields: [customerId], references: [id])
+  warehouse    Warehouse      @relation(fields: [warehouseId], references: [id])
+  product      Product        @relation(fields: [productId], references: [id])
+  vehicle      Vehicle        @relation(fields: [vehicleId], references: [id])
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Stock {
+  id          Int       @id @default(autoincrement())
+  warehouseId Int
+  productId   Int
+  quantity    Int       @default(0)
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  product     Product   @relation(fields: [productId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([warehouseId, productId])
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  IN_TRANSIT
+  MAINTENANCE
+}
+
+enum SupplyStatus {
+  PLANNED
+  IN_TRANSIT
+  RECEIVED
+  CANCELLED
+}
+
+enum ShipmentStatus {
+  PLANNED
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}

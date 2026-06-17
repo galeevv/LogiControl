@@ -1,36 +1,88 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LogiControl
 
-## Getting Started
+LogiControl — простое дипломное web-приложение для учета логистической деятельности производственного предприятия. Система позволяет вести справочники продукции, складов, поставщиков, клиентов и транспорта, а также регистрировать поставки, отгрузки и контролировать остатки продукции по складам.
 
-First, run the development server:
+## Стек
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Prisma ORM
+- SQLite
+- lucide-react
+- bcryptjs для хеширования пароля администратора
+
+## Структура проекта
+
+- `app/` — страницы приложения, защищенная зона, login/logout и server actions.
+- `components/` — общая оболочка, элементы интерфейса, формы и таблицы.
+- `lib/` — Prisma client, авторизация, cookie-сессия, форматирование и логика остатков.
+- `prisma/` — схема базы данных, миграции и seed-файл.
+
+## Страницы
+
+- `/login` — вход администратора.
+- `/` — главная панель Dashboard.
+- `/products` — продукция.
+- `/warehouses` — склады.
+- `/suppliers` — поставщики.
+- `/customers` — клиенты.
+- `/vehicles` — транспорт.
+- `/supplies` — поставки.
+- `/shipments` — отгрузки.
+- `/stocks` — остатки продукции по складам.
+
+## Модели базы данных
+
+- `User`
+- `Product`
+- `Warehouse`
+- `Supplier`
+- `Customer`
+- `Vehicle`
+- `Supply`
+- `Shipment`
+- `Stock`
+
+## Авторизация
+
+Авторизация реализована вручную без NextAuth и внешних сервисов. После входа создается `httpOnly` cookie `logicontrol_session`, подписанная через `SESSION_SECRET`.
+
+Тестовый администратор:
+
+- логин: `admin`
+- пароль: `admin123`
+
+## Seed-данные
+
+Seed создает администратора, тестовую продукцию, склады, поставщиков, клиентов, транспорт, стартовые остатки, поставки и отгрузки для демонстрации Dashboard и основных сценариев.
+
+## Запуск проекта
+
+Создайте `.env` по примеру `.env.example`:
+
+```env
+DATABASE_URL="file:./dev.db"
+SESSION_SECRET="dev-secret-change-me"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Установите зависимости и подготовьте базу данных:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npx prisma migrate dev
+npx prisma db seed
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+После запуска откройте:
 
-## Learn More
+```text
+http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Проверка сборки
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run build
+```
